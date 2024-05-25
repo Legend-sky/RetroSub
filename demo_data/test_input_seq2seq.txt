@@ -1,0 +1,42 @@
+C O C ( = O ) C c 1 c c 2 c c c ( F ) c c 2 [2cH] c 1 C . C [1SH] ( = O ) = O | c 1 c [2cH] n c [1cH] 1
+c 1 2 c c ( c c c 1 c c ( C C ( = O ) O C ) c ( [2cH] 2 ) C ) F . C [1SH] ( = O ) = O | [2cH] 1 c c [1cH] c n 1
+O = [1SH] ( C ) = O . c 1 c 2 c c ( C C ( = O ) O C ) c ( C ) [2cH] c 2 c c ( c 1 ) F | c 1 [1cH] c n [2cH] c 1
+C O C ( = O ) C c 1 c c 2 c c c ( F ) c c 2 [1cH] c 1 C | C S ( = O ) ( = O ) c 1 c c [1cH] n c 1
+[1cH] 1 c 2 c ( c c ( c 1 C ) C C ( = O ) O C ) c c c ( c 2 ) F | c 1 n [1cH] c c c 1 S ( = O ) ( = O ) C
+c 1 2 c c c ( c c 1 [1cH] c ( C ) c ( C C ( = O ) O C ) c 2 ) F | c 1 c ( c c [1cH] n 1 ) S ( = O ) ( C ) = O
+C O C ( = O ) C c 1 c c 2 c c c ( F ) c c 2 [2cH] [1cH] 1 | C S ( = O ) ( = O ) c 1 c c [2cH] n c 1 . [1CH4]
+O ( C ) C ( C c 1 [1cH] [2cH] c 2 c ( c 1 ) c c c ( c 2 ) F ) = O | [1CH4] . S ( = O ) ( C ) ( = O ) c 1 c n [2cH] c c 1
+c 1 c 2 [2cH] [1cH] c ( C C ( O C ) = O ) c c 2 c c c 1 F | [1CH4] . n 1 c c ( c c [2cH] 1 ) S ( = O ) ( C ) = O
+C O C ( = O ) C c 1 c c 2 c c c ( F ) c c 2 [1cH] c 1 C | C S ( = O ) ( = O ) c 1 c c [1cH] n c 1
+O = C ( C c 1 c c 2 c ( c c ( F ) c c 2 ) [1cH] c 1 C ) O C | S ( c 1 c c [1cH] n c 1 ) ( = O ) ( = O ) C
+O ( C ( C c 1 c c 2 c ( [1cH] c 1 C ) c c ( F ) c c 2 ) = O ) C | [1cH] 1 n c c ( c c 1 ) S ( C ) ( = O ) = O
+C O C ( = O ) C c 1 c c 2 c c [3cH] c c 2 [2cH] c 1 C . C [1SH] ( = O ) = O | [3FH] . c 1 c [2cH] n c [1cH] 1
+[1SH] ( = O ) ( = O ) C . O ( C ( C c 1 c ( C ) [2cH] c 2 c ( c c [3cH] c 2 ) c 1 ) = O ) C | [3FH] . c 1 [1cH] c c [2cH] n 1
+[1SH] ( = O ) ( = O ) C . c 1 2 [2cH] c ( c ( C C ( = O ) O C ) c c 1 c c [3cH] c 2 ) C | [2cH] 1 n c [1cH] c c 1 . [3FH]
+C O C ( [1CH3] ) = O . C [2SH] ( = O ) = O | C c 1 [1cH] c c 2 c c c ( F ) c c 2 c 1 - c 1 c c [2cH] c n 1
+[2SH] ( = O ) ( C ) = O . [1CH3] C ( O C ) = O | c 1 c ( c c c 2 c 1 c ( - c 1 c c [2cH] c n 1 ) c ( C ) [1cH] c 2 ) F
+[1CH3] C ( O C ) = O . O = [2SH] ( C ) = O | c 1 ( [1cH] c c 2 c ( c 1 - c 1 n c [2cH] c c 1 ) c c ( c c 2 ) F ) C
+C [1SH] ( = O ) = O | C O C ( = O ) C c 1 c c 2 c c c ( F ) c c 2 c ( - c 2 c c [1cH] c n 2 ) c 1 C
+O = [1SH] ( C ) = O | c 1 c [1cH] c n c 1 - c 1 c ( c ( c c 2 c c c ( F ) c c 1 2 ) C C ( = O ) O C ) C
+C [1SH] ( = O ) = O | c 1 c c ( n c [1cH] 1 ) - c 1 c ( C ) c ( C C ( O C ) = O ) c c 2 c 1 c c ( c c 2 ) F
+C O C ( = O ) C c 1 [2cH] c 2 c c c ( F ) c c 2 [3cH] [4cH] 1 . C [1SH] ( = O ) = O | [4CH4] . c 1 c [3cH] n c [1cH] 1
+O = [1SH] ( C ) = O . [2cH] 1 c ( [4cH] [3cH] c 2 c 1 c c c ( F ) c 2 ) C C ( = O ) O C | [4CH4] . c 1 [1cH] c n [3cH] c 1
+C [1SH] ( = O ) = O . c 1 ( c c 2 [3cH] [4cH] c ( C C ( O C ) = O ) [2cH] c 2 c c 1 ) F | [4CH4] . [3cH] 1 c c [1cH] c n 1
+C [1SH] ( = O ) = O | C O C ( = O ) C c 1 c c 2 c c c ( F ) c c 2 c ( - c 2 c c [1cH] c n 2 ) c 1 C
+O = [1SH] ( C ) = O | c 1 2 c ( - c 3 n c [1cH] c c 3 ) c ( C ) c ( C C ( = O ) O C ) c c 2 c c c ( c 1 ) F
+O = [1SH] ( C ) = O | F c 1 c c 2 c ( c c ( C C ( = O ) O C ) c ( c 2 - c 2 c c [1cH] c n 2 ) C ) c c 1
+C O C ( [2CH3] ) = O . C [1SH] ( = O ) = O | C c 1 [2cH] c c 2 c c c ( F ) c c 2 c 1 - c 1 c c [1cH] c n 1
+[1SH] ( = O ) ( C ) = O . [2CH3] C ( O C ) = O | [1cH] 1 c n c ( - c 2 c 3 c ( c c c ( c 3 ) F ) c [2cH] c 2 C ) c c 1
+C ( O C ) ( [2CH3] ) = O . C [1SH] ( = O ) = O | c 1 c c ( n c [1cH] 1 ) - c 1 c 2 c c ( c c c 2 c [2cH] c 1 C ) F
+C [1SH] ( = O ) = O . C c 1 [2cH] c 2 c c ( F ) c c c 2 c c 1 [3CH3] | C O [3CH] = O . c 1 c [2cH] n c [1cH] 1
+O = [1SH] ( = O ) C . c 1 ( C ) c ( c c 2 c ( c c ( c c 2 ) F ) [2cH] 1 ) [3CH3] | [2cH] 1 c c [1cH] c n 1 . O ( C ) [3CH] = O
+C c 1 c ( c c 2 c c c ( c c 2 [2cH] 1 ) F ) [3CH3] . C [1SH] ( = O ) = O | c 1 [1cH] c n [2cH] c 1 . O = [3CH] O C
+C [1SH] ( = O ) = O | C O C ( = O ) C c 1 c c 2 c c c ( F ) c c 2 c ( - c 2 c c [1cH] c n 2 ) c 1 C
+[1SH] ( C ) ( = O ) = O | c 1 c ( - c 2 c 3 c ( c c c ( F ) c 3 ) c c ( c 2 C ) C C ( O C ) = O ) n c [1cH] c 1
+O = [1SH] ( = O ) C | O = C ( O C ) C c 1 c ( C ) c ( c 2 c c ( c c c 2 c 1 ) F ) - c 1 c c [1cH] c n 1
+C O C ( [2CH3] ) = O . C [1SH] ( = O ) = O | C c 1 [2cH] c c 2 c c c ( F ) c c 2 c 1 - c 1 c c [1cH] c n 1
+C [1SH] ( = O ) = O . O = C ( [2CH3] ) O C | F c 1 c c 2 c ( c c 1 ) c [2cH] c ( c 2 - c 1 c c [1cH] c n 1 ) C
+[1SH] ( C ) ( = O ) = O . O ( C ( [2CH3] ) = O ) C | c 1 ( - c 2 c c [1cH] c n 2 ) c 2 c ( c [2cH] c 1 C ) c c c ( F ) c 2
+C O C ( [1CH3] ) = O | C c 1 [1cH] c c 2 c c c ( F ) c c 2 c 1 - c 1 c c c ( S ( C ) ( = O ) = O ) c n 1
+C ( = O ) ( [1CH3] ) O C | c 1 c ( F ) c c c 2 c 1 c ( c ( [1cH] c 2 ) C ) - c 1 c c c ( S ( = O ) ( = O ) C ) c n 1
+C ( = O ) ( O C ) [1CH3] | C S ( = O ) ( c 1 c c c ( - c 2 c ( [1cH] c c 3 c 2 c c ( F ) c c 3 ) C ) n c 1 ) = O

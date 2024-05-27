@@ -32,6 +32,7 @@ class AtomChecker(object):
 
 def update_atom_idx(mol, bond_info, common_atom_idx):
     """Check type of bond between substruture and non-substructure and update the index of common_atom
+    检查子结构和非子结构之间的结合类型，并更新common_atom的索引
     Args:
         mol (Mol):  rdkit.Chem.rdchem.Mol
         bond_info (dict): bond type information from get_bond_info()
@@ -65,94 +66,171 @@ def update_atom_idx(mol, bond_info, common_atom_idx):
     return cur_idx
 
 
+# def label_mol(mol, atom_idx, is_remove_multi2multi=False):
+#     """Add isotope label to atom in substructures
+
+#     Args:
+#         mol (Mol): input molecule
+#         atom_idx (set(int)): atom ids of substructure
+#         is_remove_multi2multi (bool, optional): if true, we do not add isotope, and this method will help
+#         obtain atoms that would be labeled with multiple isotope numbers. Defaults to False.
+
+#     Returns:
+#         labeled molecule
+#     """
+
+#     mol_rw = Chem.RWMol(mol)
+#     break_bond_atom = defaultdict(set)
+
+#     # 找到子结构中的原子，并标记它们的断键邻居
+#     for i in atom_idx:
+#         atom = mol_rw.GetAtomWithIdx(i)
+#         for x in atom.GetNeighbors():
+#             _idx = x.GetIdx()
+#             if _idx not in atom_idx:
+#                 break_bond_atom[i].add(_idx)
+
+#     isotopic_mark = 1
+#     marked_atoms = {}
+#     act_atoms = copy.deepcopy(break_bond_atom)
+
+#     while act_atoms:
+#         sub_atom_idx, frag_atom_idx = act_atoms.popitem()
+
+#         for cur_atom_idx in frag_atom_idx:
+#             sub_atom = mol_rw.GetAtomWithIdx(sub_atom_idx)
+#             frag_atom = mol_rw.GetAtomWithIdx(cur_atom_idx)
+
+#             cur_bond_type = str(mol_rw.GetBondBetweenAtoms(
+#                 sub_atom_idx, cur_atom_idx).GetBondType())
+#             cur_chiral_tag = str(sub_atom.GetChiralTag())
+
+#             if cur_atom_idx not in marked_atoms:
+#                 frag_atom.SetIsotope(isotopic_mark)
+#                 sub_atom.SetIsotope(isotopic_mark)
+
+#                 sub_atom.SetProp(PropNames.Bond_Type, cur_bond_type)
+#                 sub_atom.SetProp(PropNames.Chiral_Tag, cur_chiral_tag)
+
+#                 if is_remove_multi2multi and sub_atom_idx in marked_atoms:
+#                     # sub_atom_idx already has isotope number
+#                     # this is mainly because the atom has multiple neighbor atoms in different fragments
+#                     # for simplicity, we remove these atoms from substructure.
+#                     return sub_atom_idx
+
+#                 assert sub_atom_idx not in marked_atoms
+#                 marked_atoms[cur_atom_idx] = isotopic_mark
+#                 marked_atoms[sub_atom_idx] = isotopic_mark
+#                 isotopic_mark += 1
+#             else:
+#                 cur_mark = marked_atoms[cur_atom_idx]
+#                 sub_atom.SetIsotope(cur_mark)
+#                 sub_atom.SetProp(PropNames.Bond_Type, cur_bond_type)
+#                 sub_atom.SetProp(PropNames.Chiral_Tag, cur_chiral_tag)
+
+#                 if is_remove_multi2multi and sub_atom_idx in marked_atoms:
+#                     # sub_atom_idx already has isotope number
+#                     # this is mainly because the atom has multiple neighbor atoms in different fragments
+#                     # for simplicity, we remove these atoms from substructure.
+#                     return sub_atom_idx
+
+#                 assert sub_atom_idx not in marked_atoms
+#                 marked_atoms[sub_atom_idx] = cur_mark
+
+#     if is_remove_multi2multi:
+#         # great, no atoms will be removed from substructure
+#         return None
+#     return atom_idx, mol_rw
+
 def label_mol(mol, atom_idx, is_remove_multi2multi=False):
-    """Add isotope label to atom in substructures
+    """为子结构中的原子添加同位素标签
 
     Args:
-        mol (Mol): input molecule
-        atom_idx (set(int)): atom ids of substructure
-        is_remove_multi2multi (bool, optional): if true, we do not add isotope, and this method will help
-        obtain atoms that would be labeled with multiple isotope numbers. Defaults to False.
+        mol (Mol): 输入分子
+        atom_idx (set(int)): 子结构中的原子索引集合
+        is_remove_multi2multi (bool, optional): 是否移除多对多的情况。如果为True，不添加同位素标签，
+            而是返回将带有多个同位素编号的原子的列表。默认为False。
 
     Returns:
         labeled molecule
     """
 
-    mol_rw = Chem.RWMol(mol)
-    break_bond_atom = defaultdict(set)
+    mol_rw = Chem.RWMol(mol)  # 将分子转换为可编辑的RWMol对象
+    break_bond_atom = defaultdict(set)  # 存储断键邻居的字典
 
+    # 找到子结构中的原子，并标记它们的断键邻居
     for i in atom_idx:
-        atom = mol_rw.GetAtomWithIdx(i)
-        for x in atom.GetNeighbors():
-            _idx = x.GetIdx()
-            if _idx not in atom_idx:
-                break_bond_atom[i].add(_idx)
+        atom = mol_rw.GetAtomWithIdx(i)  # 获取原子对象
+        for x in atom.GetNeighbors():  # 遍历邻居原子
+            _idx = x.GetIdx()  # 获取邻居原子的索引
+            if _idx not in atom_idx:  # 如果邻居原子不在子结构中
+                break_bond_atom[i].add(_idx)  # 将邻居原子添加到断键邻居中
 
-    isotopic_mark = 1
-    marked_atoms = {}
-    act_atoms = copy.deepcopy(break_bond_atom)
+    isotopic_mark = 1  # 同位素标签初始值
+    marked_atoms = {}  # 存储已标记的原子字典
+    act_atoms = copy.deepcopy(break_bond_atom)  # 活跃原子字典的深拷贝
 
+    # 遍历断键邻居，为子结构中的原子添加同位素标签
     while act_atoms:
-        sub_atom_idx, frag_atom_idx = act_atoms.popitem()
+        sub_atom_idx, frag_atom_idx = act_atoms.popitem()  # 弹出一个子结构原子及其断键邻居集合
 
-        for cur_atom_idx in frag_atom_idx:
-            sub_atom = mol_rw.GetAtomWithIdx(sub_atom_idx)
-            frag_atom = mol_rw.GetAtomWithIdx(cur_atom_idx)
+        for cur_atom_idx in frag_atom_idx:  # 遍历断键邻居
+            sub_atom = mol_rw.GetAtomWithIdx(sub_atom_idx)  # 获取子结构原子对象
+            frag_atom = mol_rw.GetAtomWithIdx(cur_atom_idx)  # 获取断键邻居原子对象
 
-            cur_bond_type = str(mol_rw.GetBondBetweenAtoms(
+            cur_bond_type = str(mol_rw.GetBondBetweenAtoms(  # 获取两原子间的键类型
                 sub_atom_idx, cur_atom_idx).GetBondType())
-            cur_chiral_tag = str(sub_atom.GetChiralTag())
+            cur_chiral_tag = str(sub_atom.GetChiralTag())  # 获取子结构原子的手性标记
 
-            if cur_atom_idx not in marked_atoms:
-                frag_atom.SetIsotope(isotopic_mark)
-                sub_atom.SetIsotope(isotopic_mark)
+            if cur_atom_idx not in marked_atoms:  # 如果邻居原子未标记
+                frag_atom.SetIsotope(isotopic_mark)  # 为断键邻居原子添加同位素标签
+                sub_atom.SetIsotope(isotopic_mark)  # 为子结构原子添加同位素标签
 
-                sub_atom.SetProp(PropNames.Bond_Type, cur_bond_type)
-                sub_atom.SetProp(PropNames.Chiral_Tag, cur_chiral_tag)
+                sub_atom.SetProp(PropNames.Bond_Type, cur_bond_type)  # 设置子结构原子的键类型属性
+                sub_atom.SetProp(PropNames.Chiral_Tag, cur_chiral_tag)  # 设置子结构原子的手性标记属性
 
                 if is_remove_multi2multi and sub_atom_idx in marked_atoms:
-                    # sub_atom_idx already has isotope number
-                    # this is mainly because the atom has multiple neighbor atoms in different fragments
-                    # for simplicity, we remove these atoms from substructure.
+                    # 如果要移除多对多的情况，且子结构原子已经标记，则返回子结构原子索引
                     return sub_atom_idx
 
                 assert sub_atom_idx not in marked_atoms
-                marked_atoms[cur_atom_idx] = isotopic_mark
-                marked_atoms[sub_atom_idx] = isotopic_mark
-                isotopic_mark += 1
-            else:
-                cur_mark = marked_atoms[cur_atom_idx]
-                sub_atom.SetIsotope(cur_mark)
-                sub_atom.SetProp(PropNames.Bond_Type, cur_bond_type)
-                sub_atom.SetProp(PropNames.Chiral_Tag, cur_chiral_tag)
+                marked_atoms[cur_atom_idx] = isotopic_mark  # 记录已标记的原子
+                marked_atoms[sub_atom_idx] = isotopic_mark  # 记录已标记的原子
+                isotopic_mark += 1  # 同位素标签加1
+            else:  # 如果邻居原子已经标记
+                cur_mark = marked_atoms[cur_atom_idx]  # 获取已标记的同位素标签
+                sub_atom.SetIsotope(cur_mark)  # 为子结构原子添加同位素标签
+                sub_atom.SetProp(PropNames.Bond_Type, cur_bond_type)  # 设置子结构原子的键类型属性
+                sub_atom.SetProp(PropNames.Chiral_Tag, cur_chiral_tag)  # 设置子结构原子的手性标记属性
 
                 if is_remove_multi2multi and sub_atom_idx in marked_atoms:
-                    # sub_atom_idx already has isotope number
-                    # this is mainly because the atom has multiple neighbor atoms in different fragments
-                    # for simplicity, we remove these atoms from substructure.
+                    # 如果要移除多对多的情况，且子结构原子已经标记，则返回子结构原子索引
                     return sub_atom_idx
 
                 assert sub_atom_idx not in marked_atoms
-                marked_atoms[sub_atom_idx] = cur_mark
+                marked_atoms[sub_atom_idx] = cur_mark  # 记录已标记的原子
 
     if is_remove_multi2multi:
-        # great, no atoms will be removed from substructure
+        # 如果没有需要移除的原子，则返回None
         return None
-    return atom_idx, mol_rw
+    return atom_idx, mol_rw  # 返回标记后的原子索引集合和分子对象
 
 
-def get_sub_mol(mol, atom_idx):
+def get_sub_mol(mol, atom_idx): #从输入的分子中提取子结构和片段，并给它们添加同位素标记
     """Get substruture and fragments with isotopic label
 
-    Args:
+        Args:
         mol (Mol): rdkit.Chem.rdchem.Mol of the query molecule
         atom_idx (dict): atom index
 
     Returns:
         tuple: (substruture, substruture with isotopic label, fragments with isotopic label)            
     """
+    # 给原子添加同位素标签
     sub_atom_idx, labeled_mol = label_mol(mol, atom_idx)
+    # 将分子分割成子结构和片段
     labeled_sub, labeled_frag = split_mol(labeled_mol, sub_atom_idx)
+    # 返回去掉同位素标签的子结构，同位素标记的子结构和片段，以及标记的分子
     return remove_isotope(labeled_sub), labeled_sub, labeled_frag, labeled_mol
 
 

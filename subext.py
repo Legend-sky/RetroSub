@@ -51,6 +51,11 @@ def work(data):
 
 @func_timeout.func_set_timeout(60)
 def work_within_timelimit(s, t, cans, args, candidate_idx=1000):
+    '''
+    根据给定的源分子和目标分子，以及候选分子列表，
+    通过比较和分析它们的子结构和片段，来验证子结构在不同分子间的保留情况，
+    并在时间限制内返回结果
+    '''
     # TODO: move some code out to avoid recompute the fingerprints
     # TODO: avoid using GetSubstructMatches(not efficient)
     test_flag = args.dataset == 'test'
@@ -87,8 +92,8 @@ def work_within_timelimit(s, t, cans, args, candidate_idx=1000):
             sub_smi = canonicalize_smiles(Chem.MolToSmiles(tgt_sub))
 
             if sub_smi:
-                if test_flag:
-                    if candidate_idx >= 0:
+                if test_flag:   #对于测试集
+                    if candidate_idx >= 0:  #如果指定了候选分子索引，验证候选分子的子结构
                         # substructure from candidate should also remain unchanged in the candidate reaction
                         can_src_smi = list(all_reaction_t2s[cans[candidate_idx]])[
                             0].split('>')[0]
@@ -98,15 +103,17 @@ def work_within_timelimit(s, t, cans, args, candidate_idx=1000):
                             return pickle.dumps(None)
                     # check if the substurcture can resplit the golden target mol.
                     # for analysis purpose
+                    #检查子结构是否存在于黄金目标分子中，返回相关信息
                     splitted_golden = resplit(
                         tgt_mol, remove_isotope(src_sub), src_sub, None)
                     exists_in_golden = False
-                    if splitted_golden:
+                    if splitted_golden: 
                         exists_in_golden = True
                     return pickle.dumps((src_sub, tgt_sub, src_frag, tgt_frag, labeled_src, labeled_tgt, exists_in_golden))
                 else:
                     # on dev and train data, use the substructure to resplit the golden target
                     # return None if failed
+                    #对于开发和训练数据，使用子结构重新分割黄金目标分子，并返回相关信息
                     splitted_golden = resplit(
                         tgt_mol, remove_isotope(src_sub), src_sub, None)
                     if splitted_golden:

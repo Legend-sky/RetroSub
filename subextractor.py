@@ -16,6 +16,7 @@ Chem.SetDefaultPickleProperties(Chem.PropertyPickleOptions.AllProps)
 
 class CollectAtomIndex():
     """Collect atom index to build substructures based on fingerprint
+    收集原子索引构建基于指纹的子结构
     """
 
     def __init__(self,
@@ -47,7 +48,7 @@ class CollectAtomIndex():
         self.candidates = candidates
 
         self.query_fp_info = calculate_mol_fp(mol=query,
-                                                 radius=max_fp_radius)
+                                                 radius=max_fp_radius)  #计算一个分子的 Morgan 指纹和相应的位信息
 
         self.target_fp_info = calculate_mol_fp(mol=target,
                                                   radius=max_fp_radius,)
@@ -136,6 +137,7 @@ class CollectAtomIndex():
         return updated_target_atom_idx
 
     def get_query_atom_idx(self):
+        #获取查询分子中被公共指纹覆盖的原子索引
         # TODO: optimize the extraction process, avoid re-computing
         _, filtered_fp = self.get_common_fps()
         common_fp = [i[0] for i in filtered_fp]
@@ -189,8 +191,8 @@ class SubMolExtractor():
         self.max_fp_radius = max_fp_radius
         self.query_fp_info = self.collect_atom_idx.query_fp_info
         self.target_fp_info = self.collect_atom_idx.target_fp_info
-        self.query_atom_idx = self.collect_atom_idx.get_query_atom_idx()
-        self.target_atom_idx = self.collect_atom_idx.get_target_atom_idx()
+        self.query_atom_idx = self.collect_atom_idx.get_query_atom_idx()    #获取查询分子中被公共指纹覆盖的原子索引
+        self.target_atom_idx = self.collect_atom_idx.get_target_atom_idx()  #获取目标分子中被公共指纹覆盖的原子索引
     
 
     def filter_atom_idx(self, mol, fp_info):
@@ -284,9 +286,10 @@ class SubMolExtractor():
         """       
         # target_mol is one of the candidates
         target_mol = self.target
-        target_fp_info = self.target_fp_info
-        target_atom_idx = self.target_atom_idx
+        target_fp_info = self.target_fp_info    #目标分子的分子指纹信息
+        target_atom_idx = self.target_atom_idx  #目标分子中被公共指纹覆盖的原子索引
         # get substructure based on fingerprint from target and all candidates
+        #从输入的分子中提取子结构和片段，并给它们添加同位素标记
         target_sub, labeled_target_sub, labeled_target_frag, labeled_target = get_sub_mol(mol=target_mol,
                                                                                                     atom_idx=target_atom_idx)
         

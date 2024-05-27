@@ -2,7 +2,7 @@ import faiss
 import numpy as np
 
 # see http://ulrichpaquet.com/Papers/SpeedUp.pdf theorem 5
-def augment_data(xb, phi=None, factor=1.0): 
+def augment_data(xb, phi=None, factor=1.0):     #将原始数据从D维空间扩展到(D+1)维空间
     norms = np.linalg.norm(xb, axis=1, keepdims=True)
     if phi is None: 
         phi = norms.max() * factor

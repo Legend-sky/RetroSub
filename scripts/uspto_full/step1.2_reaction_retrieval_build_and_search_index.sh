@@ -6,7 +6,7 @@ dataset_dir=${ROOT}/data/${dataset}
 dataset_prefix=${dataset_dir}/retrieval
 retrieval_model_dir=${ROOT}/ckpts/${dataset}/dual_encoder
 
-ckpt_folder=$1
+ckpt_folder=$1  #epoch116_batch349999_acc0.79
 
 # retrievel top 20 candidates
 top=20
@@ -24,7 +24,7 @@ python3 RetrievalModel/build_index.py \
         --vocab_path ${dataset_prefix}/tgt.vocab \
         --index_path ${retrieval_model_dir}/${ckpt_folder}/mips_index \
         --max_training_instances 30000000 \
-        --batch_size 512
+        --batch_size 512        
 
 python3 RetrievalModel/build_index.py \
         --input_file ${dataset_dir}/candidates.txt\

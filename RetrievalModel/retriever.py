@@ -269,33 +269,81 @@ class MultiProjEncoder(nn.Module):
 class ProjEncoder(nn.Module):
     def __init__(self, vocab, layers, embed_dim, ff_embed_dim, num_heads, dropout, output_dim):
         super(ProjEncoder, self).__init__()
+        # 初始化一个 MonoEncoder 对象，用于编码输入序列
         self.encoder = MonoEncoder(vocab, layers, embed_dim, ff_embed_dim, num_heads, dropout)
+        # 初始化一个线性层，用于将编码后的表示映射到指定的输出维度
         self.proj = nn.Linear(embed_dim, output_dim)
+        # 保存 dropout 概率和输出维度
         self.dropout = dropout
         self.output_dim = output_dim
+        # 初始化线性层的参数
         self.reset_parameters()
 
     def reset_parameters(self):
+        # 以标准差为 0.02 的正态分布初始化线性层的权重
         nn.init.normal_(self.proj.weight, std=0.02)
+        # 将线性层的偏置初始化为 0
         nn.init.constant_(self.proj.bias, 0.)
 
     def forward(self, input_ids, batch_first=False, return_src=False):
+        # 如果 batch_first 为 True，转置输入张量
         if batch_first:
             input_ids = input_ids.t()
+        # 使用编码器对输入进行编码，得到编码结果和掩码
         src, src_mask = self.encoder(input_ids) 
-        ret = src[0,:,:]
+        # 取出编码结果的第一个时间步的表示
+        ret = src[0, :, :]
+        # 对表示应用 dropout
         ret = F.dropout(ret, p=self.dropout, training=self.training)
+        # 使用线性层进行投影
         ret = self.proj(ret)
+        # 对结果进行层归一化（假设 layer_norm 是已定义的函数）
         ret = layer_norm(ret)
+        # 如果 return_src 为 True，返回投影结果、源编码和掩码
         if return_src:
             return ret, src, src_mask
+        # 否则只返回投影结果
         return ret
 
     @classmethod
     def from_pretrained(cls, vocab, model_args, ckpt):
+        # 使用给定的参数初始化一个 ProjEncoder 对象
         model = cls(vocab, model_args.layers, model_args.embed_dim, model_args.ff_embed_dim, model_args.num_heads, model_args.dropout, model_args.output_dim)
+        # 从检查点加载预训练的权重
         model.load_state_dict(torch.load(ckpt, map_location='cpu'))
+        # 返回加载了预训练权重的模型
         return model
+
+# class ProjEncoder(nn.Module):
+#     def __init__(self, vocab, layers, embed_dim, ff_embed_dim, num_heads, dropout, output_dim):
+#         super(ProjEncoder, self).__init__()
+#         self.encoder = MonoEncoder(vocab, layers, embed_dim, ff_embed_dim, num_heads, dropout)
+#         self.proj = nn.Linear(embed_dim, output_dim)
+#         self.dropout = dropout
+#         self.output_dim = output_dim
+#         self.reset_parameters()
+
+#     def reset_parameters(self):
+#         nn.init.normal_(self.proj.weight, std=0.02)
+#         nn.init.constant_(self.proj.bias, 0.)
+
+#     def forward(self, input_ids, batch_first=False, return_src=False):
+#         if batch_first:
+#             input_ids = input_ids.t()
+#         src, src_mask = self.encoder(input_ids) 
+#         ret = src[0,:,:]
+#         ret = F.dropout(ret, p=self.dropout, training=self.training)
+#         ret = self.proj(ret)
+#         ret = layer_norm(ret)
+#         if return_src:
+#             return ret, src, src_mask
+#         return ret
+
+#     @classmethod
+#     def from_pretrained(cls, vocab, model_args, ckpt):
+#         model = cls(vocab, model_args.layers, model_args.embed_dim, model_args.ff_embed_dim, model_args.num_heads, model_args.dropout, model_args.output_dim)
+#         model.load_state_dict(torch.load(ckpt, map_location='cpu'))
+#         return model
 
 
 def batchify(data, vocab):
@@ -331,6 +379,7 @@ class DataLoader(object):
 
 @torch.no_grad()
 def get_features(batch_size, norm_th, vocab, model, used_data, used_ids, max_norm=None, max_norm_cf=1.0):
+    #从给定的数据中提取特征向量，同时过滤掉范数超过阈值norm_th的特征向量，并通过扩展操作增加数据维度
     vecs, ids = [], []
     model = torch.nn.DataParallel(model, device_ids=list(range(torch.cuda.device_count())))
     model.eval()

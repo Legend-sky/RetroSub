@@ -1,9 +1,9 @@
 #!/bin/bash
 
 dataset=uspto_full
-dataset_dir=./data/${dataset}/$1
+dataset_dir=./data/${dataset}/$1    #$1:subextraction
 transformer_model_dir=./ckpts/${dataset}/$1
-layers=$2
+layers=$2   #10
 
 python MolecularTransformer/preprocess.py -train_src ${dataset_dir}/src-train.txt \
                      -train_tgt ${dataset_dir}/tgt-train.txt \

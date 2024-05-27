@@ -197,7 +197,7 @@ def main(args, local_rank):
     torch.cuda.set_device(local_rank)
     device = torch.device('cuda', local_rank)
     
-    if args.resume_ckpt:
+    if args.resume_ckpt:    #默认为None
         model = MatchingModel.from_pretrained(vocabs, args.resume_ckpt)
     else:
         model = MatchingModel.from_params(vocabs, args.layers, args.embed_dim, args.ff_embed_dim, args.num_heads, args.dropout, args.output_dim, args.bow)
@@ -259,10 +259,11 @@ def main(args, local_rank):
     logger.info('rank %d, finish training after %d steps', local_rank, global_step)
 
 def init_processes(local_rank, args, backend='nccl'):
+    #通过 init_process_group 函数初始化分布式环境，设置主节点的地址和端口
     os.environ['MASTER_ADDR'] = args.MASTER_ADDR
     os.environ['MASTER_PORT'] = args.MASTER_PORT
     dist.init_process_group(backend, rank=args.start_rank+local_rank, world_size=args.world_size)
-    main(args, local_rank)
+    main(args, local_rank)  #最终调用 main 函数执行分布式训练任务
 
 if __name__ == "__main__":
     args = parse_config()
@@ -273,4 +274,4 @@ if __name__ == "__main__":
         main(args, 0)
         exit(0)
 
-    mp.spawn(init_processes, args=(args,), nprocs=args.gpus)
+    mp.spawn(init_processes, args=(args,), nprocs=args.gpus)    #启动多个进程

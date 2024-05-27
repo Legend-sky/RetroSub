@@ -43,7 +43,7 @@ class RankingModel(nn.Module):
     def __init__(self):
         super().__init__()
         self.scorer = nn.Sequential(
-            nn.Linear(12, 400),
+            nn.Linear(12, 400),     #输入特征维度为12，是模型期望的特征数目
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.Linear(400, 400),
@@ -52,7 +52,7 @@ class RankingModel(nn.Module):
             nn.Linear(400, 400),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.Linear(400, 2)
+            nn.Linear(400, 2)       #输出维度为2，是因为模型需要为二分类任务提供两个类别的得分
         )
         self.num_labels = 2
         self.loss_fct = LabelSmoothingCrossEntropy(0.01)
@@ -75,7 +75,7 @@ class RankingModel(nn.Module):
         return (loss,) + output
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  #训练一个排序模型（RankingModel），该模型用于处理排名任务
     args = parse_config()
     if not args.do_training:
         predicted_results = json.load(open(args.val_preds))

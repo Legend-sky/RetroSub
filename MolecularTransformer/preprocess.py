@@ -36,7 +36,7 @@ def parse_args():
         description='preprocess.py',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    opts.add_md_help_argument(parser)
+    opts.add_md_help_argument(parser)   #opts:各种配置参数和选项
     opts.preprocess_opts(parser)
 
     opt = parser.parse_args()

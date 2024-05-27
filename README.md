@@ -130,6 +130,7 @@ We also provide a demo to run our model on the user-defined input at [demo.ipynb
     
     # Collect substructures on train set only in order to obtain predictions on valid data.
     # This is used to collect data to train the ranker. 
+    #仅收集训练集上的子结构用于获得有效数据的预测。这用于收集数据以训练排序器。
     python data_utils/merge_training_data.py --total_chunks 200 \
                 --out_dir ./data/uspto_full/subextraction/
     
@@ -138,6 +139,7 @@ We also provide a demo to run our model on the user-defined input at [demo.ipynb
                 --out_dir ./data/uspto_full/subextraction/
 
     # collect the statistics over the substructures (reproduce numbers in the paper)
+    #收集子结构的统计数据（在论文中重现数字）
     python data_utils/merge_stat.py --total_chunks 200 --out_dir ./data/uspto_full/subextraction/
 
 

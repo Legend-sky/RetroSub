@@ -16,6 +16,7 @@ from onmt.train_single import main as single_main
 
 
 def main(opt):
+    #初始检查
     if opt.rnn_type == "SRU" and not opt.gpu_ranks:
         raise AssertionError("Using SRU requires -gpu_ranks set.")
 
@@ -29,9 +30,9 @@ def main(opt):
         raise AssertionError("gpuid is deprecated \
               see world_size and gpu_ranks")
 
-    nb_gpu = len(opt.gpu_ranks)
+    nb_gpu = len(opt.gpu_ranks) #确定GPU数量
 
-    if opt.world_size > 1:
+    if opt.world_size > 1:  #多GPU情况
         mp = torch.multiprocessing.get_context('spawn')
         # Create a thread to listen for errors in the child processes.
         error_queue = mp.SimpleQueue()

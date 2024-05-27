@@ -45,14 +45,14 @@ def main(args):
     
     logger.info('Collecting data...')
     
-    data_r = []
+    data_r = [] #候选集candidates
     with open(args.index_file) as f:
         for line in f.readlines():
             r = line.strip()
             data_r.append(r)
 
-    data_q = []
-    data_qr = []
+    data_q = []     #产物
+    data_qr = []    #反应物集合
     with open(args.input_file, 'r') as f:
         for line in f.readlines():
             q, r = line.strip().split('\t')

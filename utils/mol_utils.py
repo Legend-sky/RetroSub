@@ -11,6 +11,7 @@ fingerprint_prop_key = 'atomNote'
 
 def group_invariant(mol):
     """consider halogen atoms as same
+    生成一个列表，表示分子中各个原子的类型，并将卤素原子（氯、溴、碘）视为相同类型
 
     Args:
         mol (Mol): rdkit.Chem.rdchem.Mol
@@ -34,6 +35,7 @@ def group_invariant(mol):
 
 def calculate_mol_fp(mol, radius, addfp2prop=True):
     """Calculates the Morgan fingerprint and bitinfo of a molecule
+    计算一个分子的 Morgan 指纹和相应的位信息
 
     Args:
         mol (Mol): rdkit.Chem.rdchem.Mol
@@ -45,7 +47,7 @@ def calculate_mol_fp(mol, radius, addfp2prop=True):
     """
 
     fp_info = {}
-    invariant_list = group_invariant(mol)
+    invariant_list = group_invariant(mol)   #得到分子的原子不变环列表
     fp = AllChem.GetMorganFingerprint(mol,
                                       radius=radius,
                                       bitInfo=fp_info,
@@ -238,35 +240,33 @@ def need_to_add_Hs(atom):
         atom.GetIsAromatic() or atom.GetSymbol() in [
         'Si', 'P', 'S', 'Ta', 'Sn', 'As', 'Se', 'Te']
 
-
 def split_mol(mol, atom_idx):
-    """Split molecule into substructure and fragments
+    """将分子分割成子结构和片段
 
     Args:
-        mol (Mol): input molecule
-        atom_idx (set(int)): atoms ids of the substructure
+        mol (Mol): 输入分子
+        atom_idx (set(int)): 子结构中的原子索引集合
 
     Returns:
-        Tuple: isotope labeled sub and frag mol
+        Tuple: 带同位素标签的子结构和片段分子
     """
-    sub_mol, frag_mol = Chem.RWMol(mol), Chem.RWMol(mol)
+    sub_mol, frag_mol = Chem.RWMol(mol), Chem.RWMol(mol)  # 创建分子的可编辑副本
 
     atom_num = 0
     for _ in mol.GetAtoms():
         atom_num += 1
 
+    # 为子结构和片段添加氢原子
     for idx in range(atom_num - 1, -1, -1):
-        if idx in atom_idx:
-            # atom_to_remove from frag mol
-            atom_to_remove = frag_mol.GetAtomWithIdx(idx)
+        if idx in atom_idx:  # 如果原子在子结构中
+            atom_to_remove = frag_mol.GetAtomWithIdx(idx)  # 获取需要移除的原子对象
             atom_id2num_add_H = {}
 
-            for neighbor_atom in atom_to_remove.GetNeighbors():
-                neighbor_atom_id = neighbor_atom.GetIdx()
-                # the removed atom has neighbor in frag mol
+            for neighbor_atom in atom_to_remove.GetNeighbors():  # 遍历原子的邻居原子
+                neighbor_atom_id = neighbor_atom.GetIdx()  # 获取邻居原子的索引
                 if neighbor_atom_id not in atom_idx and need_to_add_Hs(frag_mol.GetAtomWithIdx(neighbor_atom_id)):
-                    bond_type = frag_mol.GetBondBetweenAtoms(
-                        neighbor_atom_id, idx).GetBondType()
+                    # 如果邻居原子不在子结构中，并且需要添加氢原子
+                    bond_type = frag_mol.GetBondBetweenAtoms(neighbor_atom_id, idx).GetBondType()  # 获取键类型
                     if bond_type == Chem.BondType.SINGLE:
                         addH = 1
                     elif bond_type == Chem.BondType.DOUBLE:
@@ -274,23 +274,21 @@ def split_mol(mol, atom_idx):
                     else:
                         assert bond_type == Chem.BondType.TRIPLE
                         addH = 3
-                    atom_id2num_add_H[neighbor_atom_id] = addH
+                    atom_id2num_add_H[neighbor_atom_id] = addH  # 记录邻居原子需要添加的氢原子数目
 
             for atom_id_to_add_H, num_H in atom_id2num_add_H.items():
                 for _ in range(num_H):
-                    new_add_H_id = frag_mol.AddAtom(Chem.Atom(1))
-                    frag_mol.AddBond(atom_id_to_add_H,
-                                     new_add_H_id, Chem.BondType.SINGLE)
-        else:
-            # atom_to_remove from frag mol
-            atom_to_remove = sub_mol.GetAtomWithIdx(idx)
+                    new_add_H_id = frag_mol.AddAtom(Chem.Atom(1))  # 添加氢原子
+                    frag_mol.AddBond(atom_id_to_add_H, new_add_H_id, Chem.BondType.SINGLE)  # 添加氢原子和邻居原子的单键
+        else:  # 如果原子在片段中
+            atom_to_remove = sub_mol.GetAtomWithIdx(idx)  # 获取需要移除的原子对象
             atom_id2num_add_H = {}
-            for neighbor_atom in atom_to_remove.GetNeighbors():
-                neighbor_atom_id = neighbor_atom.GetIdx()
-                # the removed atom has neighbor in sub mol
+
+            for neighbor_atom in atom_to_remove.GetNeighbors():  # 遍历原子的邻居原子
+                neighbor_atom_id = neighbor_atom.GetIdx()  # 获取邻居原子的索引
                 if neighbor_atom_id in atom_idx and need_to_add_Hs(sub_mol.GetAtomWithIdx(neighbor_atom_id)):
-                    bond_type = sub_mol.GetBondBetweenAtoms(
-                        neighbor_atom_id, idx).GetBondType()
+                    # 如果邻居原子在子结构中，并且需要添加氢原子
+                    bond_type = sub_mol.GetBondBetweenAtoms(neighbor_atom_id, idx).GetBondType()  # 获取键类型
                     if bond_type == Chem.BondType.SINGLE:
                         addH = 1
                     elif bond_type == Chem.BondType.DOUBLE:
@@ -298,25 +296,104 @@ def split_mol(mol, atom_idx):
                     else:
                         assert bond_type == Chem.BondType.TRIPLE
                         addH = 3
-                    atom_id2num_add_H[neighbor_atom_id] = addH
+                    atom_id2num_add_H[neighbor_atom_id] = addH  # 记录邻居原子需要添加的氢原子数目
 
             for atom_id_to_add_H, num_H in atom_id2num_add_H.items():
                 for _ in range(num_H):
-                    new_add_H_id = sub_mol.AddAtom(Chem.Atom(1))
-                    sub_mol.AddBond(atom_id_to_add_H,
-                                    new_add_H_id, Chem.BondType.SINGLE)
+                    new_add_H_id = sub_mol.AddAtom(Chem.Atom(1))  # 添加氢原子
+                    sub_mol.AddBond(atom_id_to_add_H, new_add_H_id, Chem.BondType.SINGLE)  # 添加氢原子和邻居原子的单键
 
+    # 移除子结构和片段中的原子
     for idx in range(atom_num - 1, -1, -1):
-        if idx in atom_idx:
-            frag_mol.RemoveAtom(idx)
-        else:
-            sub_mol.RemoveAtom(idx)
+        if idx in atom_idx:  # 如果原子在子结构中
+            frag_mol.RemoveAtom(idx)  # 移除片段中的原子
+        else:  # 如果原子在片段中
+            sub_mol.RemoveAtom(idx)  # 移除子结构中的原子
 
-    # Hack to fix when "HasSubstructMatch" in label_query_mol might fail
-    # the reason might be that the submol has [H], don't know why rdkit fails
+    # 修复由于子结构中的原子带有 [H] 导致的错误
     sub_mol = Chem.MolFromSmiles(Chem.MolToCXSmiles(sub_mol))
     frag_mol = Chem.MolFromSmiles(Chem.MolToCXSmiles(frag_mol))
-    return sub_mol, frag_mol
+    return sub_mol, frag_mol  # 返回带同位素标签的子结构和片段分子
+
+# def split_mol(mol, atom_idx):
+#     """Split molecule into substructure and fragments
+
+#     Args:
+#         mol (Mol): input molecule
+#         atom_idx (set(int)): atoms ids of the substructure
+
+#     Returns:
+#         Tuple: isotope labeled sub and frag mol
+#     """
+#     sub_mol, frag_mol = Chem.RWMol(mol), Chem.RWMol(mol)
+
+#     atom_num = 0
+#     for _ in mol.GetAtoms():
+#         atom_num += 1
+
+#     # 为子结构和片段添加氢原子
+#     for idx in range(atom_num - 1, -1, -1):
+#         if idx in atom_idx:
+#             # atom_to_remove from frag mol
+#             atom_to_remove = frag_mol.GetAtomWithIdx(idx)
+#             atom_id2num_add_H = {}
+
+#             for neighbor_atom in atom_to_remove.GetNeighbors():
+#                 neighbor_atom_id = neighbor_atom.GetIdx()
+#                 # the removed atom has neighbor in frag mol
+#                 if neighbor_atom_id not in atom_idx and need_to_add_Hs(frag_mol.GetAtomWithIdx(neighbor_atom_id)):
+#                     bond_type = frag_mol.GetBondBetweenAtoms(
+#                         neighbor_atom_id, idx).GetBondType()
+#                     if bond_type == Chem.BondType.SINGLE:
+#                         addH = 1
+#                     elif bond_type == Chem.BondType.DOUBLE:
+#                         addH = 2
+#                     else:
+#                         assert bond_type == Chem.BondType.TRIPLE
+#                         addH = 3
+#                     atom_id2num_add_H[neighbor_atom_id] = addH
+
+#             for atom_id_to_add_H, num_H in atom_id2num_add_H.items():
+#                 for _ in range(num_H):
+#                     new_add_H_id = frag_mol.AddAtom(Chem.Atom(1))
+#                     frag_mol.AddBond(atom_id_to_add_H,
+#                                      new_add_H_id, Chem.BondType.SINGLE)
+#         else:
+#             # atom_to_remove from frag mol
+#             atom_to_remove = sub_mol.GetAtomWithIdx(idx)
+#             atom_id2num_add_H = {}
+#             for neighbor_atom in atom_to_remove.GetNeighbors():
+#                 neighbor_atom_id = neighbor_atom.GetIdx()
+#                 # the removed atom has neighbor in sub mol
+#                 if neighbor_atom_id in atom_idx and need_to_add_Hs(sub_mol.GetAtomWithIdx(neighbor_atom_id)):
+#                     bond_type = sub_mol.GetBondBetweenAtoms(
+#                         neighbor_atom_id, idx).GetBondType()
+#                     if bond_type == Chem.BondType.SINGLE:
+#                         addH = 1
+#                     elif bond_type == Chem.BondType.DOUBLE:
+#                         addH = 2
+#                     else:
+#                         assert bond_type == Chem.BondType.TRIPLE
+#                         addH = 3
+#                     atom_id2num_add_H[neighbor_atom_id] = addH
+
+#             for atom_id_to_add_H, num_H in atom_id2num_add_H.items():
+#                 for _ in range(num_H):
+#                     new_add_H_id = sub_mol.AddAtom(Chem.Atom(1))
+#                     sub_mol.AddBond(atom_id_to_add_H,
+#                                     new_add_H_id, Chem.BondType.SINGLE)
+#     # 移除子结构和片段中的原子
+#     for idx in range(atom_num - 1, -1, -1):
+#         if idx in atom_idx:
+#             frag_mol.RemoveAtom(idx)
+#         else:
+#             sub_mol.RemoveAtom(idx)
+
+#     # Hack to fix when "HasSubstructMatch" in label_query_mol might fail
+#     # the reason might be that the submol has [H], don't know why rdkit fails
+#     sub_mol = Chem.MolFromSmiles(Chem.MolToCXSmiles(sub_mol))
+#     frag_mol = Chem.MolFromSmiles(Chem.MolToCXSmiles(frag_mol))
+#     return sub_mol, frag_mol
 
 
 def remove_isotope(input_mol):
@@ -412,6 +489,7 @@ FRAG = 40  # Label of atom in fragments
 
 
 def merge_with_prop(mols, is_sanitized):
+    #用于合并分子结构和片段。它使用RDKit库进行操作，并处理了同位素标签和分子结构的合并
     """Merge substructures and fragments
 
     Args:
@@ -432,7 +510,7 @@ def merge_with_prop(mols, is_sanitized):
 
     # Insert mol of fragments into substructure mol
     if frag_mol:
-        mol_rw.InsertMol(frag_mol)
+        mol_rw.InsertMol(frag_mol)  #将片段插入子结构
         for atom in mol_rw.GetAtoms():
             _label = atom.GetIsotope()
             if 0 < _label < SUB:

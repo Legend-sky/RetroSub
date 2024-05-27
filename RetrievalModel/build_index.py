@@ -50,7 +50,7 @@ def main(args):
 
     vocab = Vocab(args.vocab_path, 0, [BOS, EOS])
     model_args = torch.load(args.args_path)
-    model = ProjEncoder.from_pretrained(vocab, model_args, args.ckpt_path)
+    model = ProjEncoder.from_pretrained(vocab, model_args, args.ckpt_path)  #加载训练好的双编码器模型
     model.to(device)
 
     logger.info('Collecting data...')
@@ -62,7 +62,7 @@ def main(args):
             line_id += 1
             data.append([r, line_id])
 
-    if args.only_dump_feat:
+    if args.only_dump_feat:     #使用已训练好的数据，而不会进一步处理或训练
         max_norm = torch.load(os.path.join(os.path.dirname(args.index_path), 'max_norm.pt'))
         used_data = [x[0] for x in data]
         used_ids = np.array([x[1] for x in data])
@@ -90,7 +90,7 @@ def main(args):
         if args.add_to_index:
             mips.add_with_ids(used_data, used_ids)
             data = data[args.max_training_instances:]
-        mips.save(args.index_path)
+        mips.save(args.index_path)  #保存mips_index
         torch.save(max_norm, os.path.join(os.path.dirname(args.index_path), 'max_norm.pt'))
     else:
         mips = MIPS.from_built(args.index_path, nprobe=args.nprobe)
